@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FINTRAC Fines Calculator | Fortis AML Consulting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Libre+Caslon+Text:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14233B; --paper:#F3F5F8; --sheet:#FFFFFF; --steel:#5B6B80; --line:#D5DCE5;
+  --seal:#B3261E; --seal-soft:#F8E4E2; --brass:#9C7A33; --ok:#2E6B4F;
+  --bg:var(--paper); --text:var(--ink); --muted:var(--steel); --card:var(--sheet);
+  --sans:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --serif:"Libre Caslon Text",Georgia,"Times New Roman",serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1726; --text:#E6ECF4; --muted:#9AA8BA; --card:#16233A; --line:#2A3A55;
+    --seal:#F07C72; --seal-soft:#3A1F24; --brass:#D2AE62; --ok:#6FC39B; --ink:#E6ECF4;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1726; --text:#E6ECF4; --muted:#9AA8BA; --card:#16233A; --line:#2A3A55;
+  --seal:#F07C72; --seal-soft:#3A1F24; --brass:#D2AE62; --ok:#6FC39B; --ink:#E6ECF4;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--brass);outline-offset:2px;border-radius:3px}
+
+.wrap{max-width:1180px;margin:0 auto;padding:40px 24px 120px}
+header.top{max-width:720px;margin-bottom:36px}
+.brand{font-weight:700;font-size:15px;color:var(--brass);margin:0 0 20px;letter-spacing:.01em}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(32px,5vw,50px);line-height:1.12;margin:0 0 16px}
+.lede{color:var(--muted);font-size:18px;margin:0;max-width:62ch}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);gap:40px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+fieldset{border:0;margin:0 0 36px;padding:0}
+legend{font-weight:700;font-size:19px;padding:0;margin-bottom:4px}
+.hint{color:var(--muted);font-size:14.5px;margin:0 0 14px;max-width:60ch}
+
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card)}
+.seg label{position:relative;cursor:pointer}
+.seg input{position:absolute;opacity:0;inset:0}
+.seg span{display:block;padding:10px 16px;font-size:15px;font-weight:500}
+.seg input:checked + span{background:var(--text);color:var(--bg)}
+.seg input:focus-visible + span{outline:3px solid var(--brass);outline-offset:-3px}
+.row{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-end}
+.field label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+.money{display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;background:var(--card);padding:0 12px}
+.money span{color:var(--muted)}
+.money input,.count input{border:0;background:transparent;color:var(--text);font:inherit;font-size:16px;padding:10px 6px;width:170px}
+.money input:focus,.count input:focus{outline:none}
+.money:focus-within,.count:focus-within{outline:3px solid var(--brass);outline-offset:1px}
+
+.gap{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-top:1px solid var(--line);cursor:pointer}
+.gap:last-child{border-bottom:1px solid var(--line)}
+.gap input[type=checkbox]{width:20px;height:20px;margin-top:3px;accent-color:var(--seal);flex:none}
+.gap .t{font-weight:600}
+.gap .d{color:var(--muted);font-size:14.5px}
+.tier{display:inline-block;font-size:12.5px;font-weight:600;padding:1px 8px;border-radius:99px;margin-left:6px;vertical-align:1px;border:1px solid currentColor}
+.tier.minor{color:var(--muted)} .tier.serious{color:var(--brass)} .tier.vserious{color:var(--seal)}
+
+.rep{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
+.rep:last-child{border-bottom:1px solid var(--line)}
+.count{display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.count button{border:0;background:transparent;color:var(--text);font:inherit;font-size:20px;width:40px;height:42px;cursor:pointer}
+.count input{width:70px;text-align:center;padding:10px 0;-moz-appearance:textfield}
+.count input::-webkit-outer-spin-button,.count input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+/* Notice */
+.notice{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);background:var(--card);border:1px solid var(--line);border-top:6px solid var(--seal);border-radius:4px 4px 10px 10px;padding:26px 26px 22px;box-shadow:0 18px 40px -24px rgba(20,35,59,.35)}
+@media (max-width:900px){.notice{position:static}}
+.n-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;border-bottom:1px dashed var(--line);padding-bottom:14px;margin-bottom:14px}
+.n-title{font-family:var(--serif);font-size:21px;line-height:1.25;margin:0}
+.n-sub{font-size:13.5px;color:var(--muted);margin:4px 0 0}
+.stamp{flex:none;border:2px solid var(--seal);color:var(--seal);border-radius:6px;padding:4px 8px;font-size:12px;font-weight:700;transform:rotate(-4deg);text-align:center;line-height:1.2}
+.lines{list-style:none;margin:0;padding:0;font-size:14.5px;min-height:40px}
+.lines li{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--line)}
+.lines li .amt{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.lines .empty{color:var(--muted);border:0;display:block}
+.total{margin:18px 0 4px}
+.total .lbl{font-size:14px;color:var(--muted);font-weight:600}
+.total .big{font-family:var(--serif);font-size:clamp(34px,6vw,46px);line-height:1.1;color:var(--seal);font-variant-numeric:tabular-nums;word-break:break-word}
+.capnote{font-size:13px;color:var(--muted);min-height:1em;margin:4px 0 0}
+
+.compare{margin:20px 0 6px}
+.compare p{font-size:14px;font-weight:600;margin:0 0 8px}
+.bar{display:grid;grid-template-columns:118px 1fr;gap:10px;align-items:center;font-size:13.5px;margin-bottom:8px}
+.track{height:14px;background:var(--line);border-radius:3px;overflow:hidden}
+.fill{height:100%;width:0;border-radius:3px;transition:width .5s ease}
+.fill.old{background:var(--muted)} .fill.new{background:var(--seal)}
+.bar .v{grid-column:2;font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px;margin-top:-4px}
+
+.extra{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);font-size:14.5px}
+.extra strong{font-variant-numeric:tabular-nums}
+
+.cta{display:block;text-align:center;margin-top:20px;background:var(--text);color:var(--bg);text-decoration:none;font-weight:700;padding:14px 18px;border-radius:8px}
+.cta:hover{opacity:.9}
+.cta-sub{text-align:center;font-size:13px;color:var(--muted);margin:8px 0 0}
+
+.fine{margin-top:48px;max-width:760px;font-size:13.5px;color:var(--muted)}
+.fine h2{font-size:15px;color:var(--text);margin:0 0 6px}
+.fine ul{padding-left:18px;margin:6px 0 14px}
+
+/* mobile total bar */
+.mbar{display:none}
+@media (max-width:900px){
+  .mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--card);border-top:3px solid var(--seal);padding:10px 18px calc(10px + env(safe-area-inset-bottom,0px));justify-content:space-between;align-items:center;gap:12px;box-shadow:0 -8px 24px -12px rgba(0,0,0,.3)}
+  .mbar .m1{font-size:12.5px;color:var(--muted);line-height:1.2}
+  .mbar .m2{font-family:var(--serif);font-size:22px;color:var(--seal);font-variant-numeric:tabular-nums}
+  .mbar a{font-size:14px;font-weight:700;text-decoration:underline}
+}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <p class="brand">Fortis AML Consulting</p>
+    <h1>What could weak AML compliance cost your business?</h1>
+    <p class="lede">Since March 26, 2026, FINTRAC can issue penalties up to 40 times higher than before. Tick the gaps that apply to you and see your possible penalty exposure in seconds.</p>
+  </header>
+
+  <div class="grid">
+    <form id="calc" onsubmit="return false">
+      <fieldset>
+        <legend>About your business</legend>
+        <p class="hint">Penalty limits depend on who is penalized and when the violation happened.</p>
+        <div class="row">
+          <div>
+            <div class="field"><label id="lbl-type">You are</label></div>
+            <div class="seg" role="radiogroup" aria-labelledby="lbl-type">
+              <label><input type="radio" name="who" value="entity" checked><span>A business</span></label>
+              <label><input type="radio" name="who" value="individual"><span>An individual</span></label>
+            </div>
+          </div>
+          <div>
+            <div class="field"><label id="lbl-rules">Violations happened</label></div>
+            <div class="seg" role="radiogroup" aria-labelledby="lbl-rules">
+              <label><input type="radio" name="rules" value="new" checked><span>After Mar 26, 2026</span></label>
+              <label><input type="radio" name="rules" value="old"><span>Before</span></label>
+            </div>
+          </div>
+        </div>
+        <div class="row" style="margin-top:18px">
+          <div class="field">
+            <label for="revenue">Yearly gross revenue (optional)</label>
+            <div class="money"><span>$</span><input id="revenue" inputmode="numeric" placeholder="e.g. 5,000,000" autocomplete="off"></div>
+          </div>
+          <div class="field">
+            <label for="monthly">Monthly revenue at risk (optional)</label>
+            <div class="money"><span>$</span><input id="monthly" inputmode="numeric" placeholder="e.g. 150,000" autocomplete="off"></div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Compliance program gaps</legend>
+        <p class="hint">Every business covered by the PCMLTFA must have these five parts in place. Each missing part can be a separate violation.</p>
+        <div id="gaps"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Reports not filed</legend>
+        <p class="hint">Enter how many reports were missed. Each missed report can count as its own violation.</p>
+        <div id="reps"></div>
+      </fieldset>
+    </form>
+
+    <aside class="notice" id="notice" aria-live="polite">
+      <div class="n-head">
+        <div>
+          <h2 class="n-title">Your penalty exposure</h2>
+          <p class="n-sub" id="rulesLine">New framework, business</p>
+        </div>
+        <div class="stamp">Estimate<br>only</div>
+      </div>
+      <ul class="lines" id="lines"></ul>
+      <div class="total">
+        <div class="lbl">Maximum possible penalty</div>
+        <div class="big" id="total">$0</div>
+        <p class="capnote" id="capnote"></p>
+      </div>
+
+      <div class="compare">
+        <p>Same gaps, old rules vs. new rules</p>
+        <div class="bar"><span>Before Mar 2026</span><div class="track"><div class="fill old" id="barOld"></div></div><span class="v" id="vOld">$0</span></div>
+        <div class="bar"><span>After Mar 2026</span><div class="track"><div class="fill new" id="barNew"></div></div><span class="v" id="vNew">$0</span></div>
+      </div>
+
+      <div class="extra" id="extra" hidden></div>
+
+      <a class="cta" href="https://fortisamlconsulting.com/contact-us/" target="_blank" rel="noopener">Book a free compliance review</a>
+      <p class="cta-sub">Fix gaps before a FINTRAC examination finds them.</p>
+    </aside>
+  </div>
+
+  <section class="fine">
+    <h2>How this works</h2>
+    <p>This tool shows the legal maximum. FINTRAC decides the real amount case by case. It looks at how much harm the violation caused, your compliance history, and, under the new rules, your ability to pay. When a business completely fails an obligation, FINTRAC has said it will generally apply the maximum available penalty. Serious cases are also published on FINTRAC's website.</p>
+    <ul>
+      <li>Maximum per violation, old rules: minor $1,000; serious $100,000; very serious $500,000 for businesses ($100,000 for individuals).</li>
+      <li>Maximum per violation, new rules: minor $40,000; serious $4,000,000; very serious $20,000,000 for businesses (about $4,000,000 for individuals).</li>
+      <li>For businesses under the new rules, the total for multiple violations is capped at $20 million, or 3% of gross global revenue if revenue is above $20 million.</li>
+      <li>Tiers follow classifications used in published FINTRAC penalty notices. The new framework may move some compliance program violations to "very serious."</li>
+    </ul>
+    <p>This is an educational estimate, not legal advice. Sources: <a href="https://fintrac-canafe.canada.ca/pen/3-eng" target="_blank" rel="noopener">FINTRAC penalty framework changes</a>, <a href="https://fintrac-canafe.canada.ca/businesses-entreprises/changes-changements-eng" target="_blank" rel="noopener">FINTRAC modernization updates</a>.</p>
+  </section>
+</div>
+
+<div class="mbar" aria-hidden="true">
+  <div><div class="m1">Maximum possible penalty</div><div class="m2" id="mTotal">$0</div></div>
+  <a href="#notice">See breakdown</a>
+</div>
+
+<script>
+(function(){
+  var MAX = {
+    old:{entity:{minor:1000,serious:100000,vserious:500000},individual:{minor:1000,serious:100000,vserious:100000}},
+    nw:{entity:{minor:40000,serious:4000000,vserious:20000000},individual:{minor:40000,serious:4000000,vserious:4000000}}
+  };
+  var TIER = {minor:"Minor",serious:"Serious",vserious:"Very serious"};
+  var GAPS = [
+    {id:"officer",t:"No compliance officer appointed",d:"Nobody is formally responsible for running the AML program.",tier:"serious"},
+    {id:"policies",t:"Written policies are missing or out of date",d:"Procedures for KYC, reporting and record keeping are not documented.",tier:"serious"},
+    {id:"risk",t:"No documented risk assessment",d:"Client, product, channel and geography risks are not assessed in writing.",tier:"serious"},
+    {id:"training",t:"No ongoing staff training program",d:"Employees and agents are not trained regularly on AML duties.",tier:"serious"},
+    {id:"review",t:"No two-year effectiveness review",d:"The program has not been independently tested in the last two years.",tier:"serious"}
+  ];
+  var REPS = [
+    {id:"str",t:"Suspicious transaction reports (STR)",tier:"vserious"},
+    {id:"lctr",t:"Large cash transaction reports (LCTR)",tier:"minor"},
+    {id:"lvctr",t:"Large virtual currency transaction reports (LVCTR)",tier:"minor"},
+    {id:"eft",t:"Large electronic funds transfer reports (EFTR)",tier:"minor"}
+  ];
+
+  var gapsEl=document.getElementById("gaps"), repsEl=document.getElementById("reps");
+  GAPS.forEach(function(g){
+    var l=document.createElement("label");l.className="gap";
+    l.innerHTML='<input type="checkbox" data-gap="'+g.id+'"><div><div class="t">'+g.t+'<span class="tier '+g.tier+'">'+TIER[g.tier]+'</span></div><div class="d">'+g.d+'</div></div>';
+    gapsEl.appendChild(l);
+  });
+  REPS.forEach(function(r){
+    var d=document.createElement("div");d.className="rep";
+    d.innerHTML='<label for="r-'+r.id+'"><span class="t" style="font-weight:600">'+r.t+'</span><span class="tier '+r.tier+'">'+TIER[r.tier]+'</span></label>'+
+      '<div class="count"><button type="button" aria-label="Fewer" data-step="-1" data-for="r-'+r.id+'">−</button><input id="r-'+r.id+'" data-rep="'+r.id+'" type="number" min="0" step="1" value="0" inputmode="numeric"><button type="button" aria-label="More" data-step="1" data-for="r-'+r.id+'">+</button></div>';
+    repsEl.appendChild(d);
+  });
+
+  function num(v){v=String(v||"").replace(/[^0-9.]/g,"");var n=parseFloat(v);return isFinite(n)&&n>0?n:0}
+  function fmt(n){return "$"+Math.round(n).toLocaleString("en-CA")}
+  function short(n){
+    if(n>=1e9)return "$"+(n/1e9).toFixed(n>=1e10?0:1).replace(/\.0$/,"")+"B";
+    if(n>=1e6)return "$"+(n/1e6).toFixed(n>=1e8?0:1).replace(/\.0$/,"")+"M";
+    return fmt(n);
+  }
+
+  function totals(who,rules,items){
+    var t=MAX[rules][who],s=0;
+    items.forEach(function(i){s+=t[i.tier]*i.qty});
+    return s;
+  }
+
+  var shown=0,anim=null,reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function animateTo(v){
+    var el=document.getElementById("total"),m=document.getElementById("mTotal");
+    if(reduce){shown=v;el.textContent=fmt(v);m.textContent=short(v);return}
+    cancelAnimationFrame(anim);var from=shown,start=null;
+    function step(ts){if(!start)start=ts;var p=Math.min(1,(ts-start)/450),e=1-Math.pow(1-p,3);shown=from+(v-from)*e;el.textContent=fmt(shown);m.textContent=short(shown);if(p<1)anim=requestAnimationFrame(step)}
+    anim=requestAnimationFrame(step);
+  }
+
+  function update(){
+    var who=document.querySelector('input[name=who]:checked').value;
+    var rules=document.querySelector('input[name=rules]:checked').value==="new"?"nw":"old";
+    var revenue=num(document.getElementById("revenue").value);
+    var monthly=num(document.getElementById("monthly").value);
+    var items=[];
+    GAPS.forEach(function(g){if(document.querySelector('[data-gap="'+g.id+'"]').checked)items.push({t:g.t,tier:g.tier,qty:1})});
+    REPS.forEach(function(r){var q=Math.floor(num(document.getElementById("r-"+r.id).value));if(q>0)items.push({t:r.t,tier:r.tier,qty:q})});
+
+    document.getElementById("rulesLine").textContent=(rules==="nw"?"New rules (after March 26, 2026)":"Old rules (before March 26, 2026)")+", "+(who==="entity"?"business":"individual");
+
+    var lines=document.getElementById("lines");lines.innerHTML="";
+    var t=MAX[rules][who];
+    if(!items.length){lines.innerHTML='<li class="empty">Tick a gap or add missed reports to see your exposure.</li>'}
+    items.forEach(function(i){
+      var li=document.createElement("li");
+      li.innerHTML='<span>'+i.t+(i.qty>1?' × '+i.qty.toLocaleString("en-CA"):'')+'</span><span class="amt">'+short(t[i.tier]*i.qty)+'</span>';
+      lines.appendChild(li);
+    });
+
+    var oldT=totals(who,"old",items),newRaw=totals(who,"nw",items),newT=newRaw,cap=null;
+    if(who==="entity"){cap=revenue>2e7?Math.max(2e7,revenue*0.03):2e7;newT=Math.min(newRaw,cap)}
+    var cur=rules==="nw"?newT:oldT;
+    animateTo(cur);
+
+    var cn=document.getElementById("capnote");
+    if(rules==="nw"&&who==="entity"&&newRaw>cap){cn.textContent="Capped at "+short(cap)+" for multiple violations. Before the cap: "+short(newRaw)+"."}
+    else cn.textContent=items.length?"Per-violation maximums added together.":"";
+
+    var mx=Math.max(oldT,newT,1);
+    document.getElementById("barOld").style.width=(oldT/mx*100)+"%";
+    document.getElementById("barNew").style.width=(newT/mx*100)+"%";
+    document.getElementById("vOld").textContent=short(oldT);
+    document.getElementById("vNew").textContent=short(newT)+(oldT>0?"  ("+Math.round(newT/oldT)+"× higher)":"");
+
+    var ex=document.getElementById("extra");
+    if(monthly>0&&items.length){
+      ex.hidden=false;
+      ex.innerHTML='Penalties are not the only cost. If a public penalty notice makes your bank or payment partner close your account for 3 months, you could also lose about <strong>'+fmt(monthly*3)+'</strong> in revenue.';
+    } else ex.hidden=true;
+  }
+
+  document.getElementById("calc").addEventListener("input",update);
+  document.getElementById("calc").addEventListener("change",update);
+  document.querySelectorAll("[data-step]").forEach(function(b){
+    b.addEventListener("click",function(){
+      var i=document.getElementById(b.getAttribute("data-for"));
+      i.value=Math.max(0,Math.floor(num(i.value))+parseInt(b.getAttribute("data-step"),10));update();
+    });
+  });
+  ["revenue","monthly"].forEach(function(id){
+    var el=document.getElementById(id);
+    el.addEventListener("blur",function(){var n=num(el.value);el.value=n?Math.round(n).toLocaleString("en-CA"):""});
+  });
+  update();
+})();
+</script>
+</body>
+</html>
