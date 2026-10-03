@@ -31,4 +31,4 @@ A single `index.html`: vanilla JS with no dependencies.
 
 **Reach out → [zov911.com](https://zov911.com)**
 
-© 2026 zov911. All rights reserved.
+© zov911. All rights reserved.
