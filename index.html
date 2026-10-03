@@ -3,7 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>FINTRAC Fines Calculator | Fortis AML Consulting</title>
+<title>FINTRAC Fines Calculator: AML Penalty Exposure (2026 Rules)</title>
+<meta name="description" content="Estimate your maximum FINTRAC administrative monetary penalty under the new 2026 framework: compliance program gaps, missed reports, revenue-based caps and old vs new rules.">
+<meta name="author" content="zov911">
+<meta property="og:title" content="FINTRAC Fines Calculator: what could weak AML compliance cost you?">
+<meta property="og:description" content="Penalties are now up to 40× higher. See your exposure in seconds.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect x=%274%27 y=%273%27 width=%2724%27 height=%2726%27 rx=%273%27 fill=%27none%27 stroke=%27%23B3261E%27 stroke-width=%273%27/%3E%3Cpath d=%27M10 11h12M10 17h12M10 23h7%27 stroke=%27%23B3261E%27 stroke-width=%273%27/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Libre+Caslon+Text:wght@400;700&display=swap" rel="stylesheet">
@@ -125,7 +131,7 @@ legend{font-weight:700;font-size:19px;padding:0;margin-bottom:4px}
 <body>
 <div class="wrap">
   <header class="top">
-    <p class="brand">Fortis AML Consulting</p>
+    <p class="brand">AML Compliance Toolkit · Canada · Updated 2026</p>
     <h1>What could weak AML compliance cost your business?</h1>
     <p class="lede">Since March 26, 2026, FINTRAC can issue penalties up to 40 times higher than before. Tick the gaps that apply to you and see your possible penalty exposure in seconds.</p>
   </header>
@@ -199,8 +205,8 @@ legend{font-weight:700;font-size:19px;padding:0;margin-bottom:4px}
 
       <div class="extra" id="extra" hidden></div>
 
-      <a class="cta" href="https://fortisamlconsulting.com/contact-us/" target="_blank" rel="noopener">Book a free compliance review</a>
-      <p class="cta-sub">Fix gaps before a FINTRAC examination finds them.</p>
+      <a class="cta" href="https://zov911.com" target="_blank" rel="noopener">Want a tool like this for your business? → zov911.com</a>
+      <p class="cta-sub">I build calculators that turn regulatory risk into qualified leads. Also try the <a href="https://zov911.github.io/fintrac-report-checker/">FINTRAC report checker</a>.</p>
     </aside>
   </div>
 
@@ -214,6 +220,7 @@ legend{font-weight:700;font-size:19px;padding:0;margin-bottom:4px}
       <li>Tiers follow classifications used in published FINTRAC penalty notices. The new framework may move some compliance program violations to "very serious."</li>
     </ul>
     <p>This is an educational estimate, not legal advice. Sources: <a href="https://fintrac-canafe.canada.ca/pen/3-eng" target="_blank" rel="noopener">FINTRAC penalty framework changes</a>, <a href="https://fintrac-canafe.canada.ca/businesses-entreprises/changes-changements-eng" target="_blank" rel="noopener">FINTRAC modernization updates</a>.</p>
+    <p style="margin-top:28px;padding-top:16px;border-top:1px solid var(--line)">© <span id="yr">2026</span> zov911 · Designed &amp; built by <a href="https://zov911.com" target="_blank" rel="noopener">zov911</a> · <a href="https://github.com/zov911" target="_blank" rel="noopener">GitHub</a> · Not affiliated with FINTRAC.</p>
   </section>
 </div>
 
@@ -334,6 +341,7 @@ legend{font-weight:700;font-size:19px;padding:0;margin-bottom:4px}
     el.addEventListener("blur",function(){var n=num(el.value);el.value=n?Math.round(n).toLocaleString("en-CA"):""});
   });
   update();
+  document.getElementById("yr").textContent=new Date().getFullYear();
 })();
 </script>
 </body>
